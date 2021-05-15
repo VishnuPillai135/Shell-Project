@@ -1,0 +1,24 @@
+#!/bin/dash
+
+name=".legit"
+address=$PWD
+if [ $# -eq 0 ] #ensuring that number of arguments is 1
+then
+    if [ ! -e "$name" ] #ensuring that legit-init hasn't been used
+    then 
+        mkdir "$name"
+        mkdir $PWD/.legit/index
+        echo "Initialized empty legit repository in .legit"
+    else 
+        >&2 echo "legit-init: error: .legit already exists"
+        exit 1
+    fi
+else
+    >&2 echo "usage: legit-init"
+    exit 1
+fi
+
+
+
+
+

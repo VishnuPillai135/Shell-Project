@@ -1,0 +1,24 @@
+#!/bin/dash
+
+address=$PWD
+if [ ! -e ".legit" ] #check whether legit-init has been used
+then
+    >&2 echo "legit-log: error: no .legit directory containing legit repository exists"
+    exit 1
+fi
+cd .legit
+if [ ! -e "extra_files" ] #check whether legit-commit has been used
+then
+    >&2 echo "legit-log: error: your repository does not have any commits yet"
+    exit 1
+fi
+if [ $# -ne 0 ] #check whether number of arguments is correct
+then
+    >&2 echo "usage: legit-log"
+    exit 1
+fi
+#functionality of code performed here
+cd "$address/.legit/extra_files"
+sort -r ".message.txt"
+
+

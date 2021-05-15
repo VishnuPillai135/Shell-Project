@@ -1,0 +1,54 @@
+#!/bin/dash
+
+address=$PWD
+
+if [ ! -e ".legit" ] #checking if legit-init has been used
+then
+    >&2 echo "legit-show: error: no .legit directory containing legit repository exists"
+    exit 1
+fi
+
+cd ".legit"
+
+if [ ! -e "extra_files" ] #checking if legit-commit has been used
+then
+    >&2 echo "legit-show: error: your repository does not have any commits yet"
+    exit 1
+fi
+
+if [ $# -ne 1 ] #checking if correct number of arguments
+then
+    >&2 echo "usage: legit-show <commit>:<filename>"
+    exit 1
+fi
+
+cd "$address/.legit/extra_files"
+ONE=`echo $1 | cut -d':' -f1`
+TWO=`echo $1 | cut -d':' -f2`
+
+
+if [ -z "$ONE" ] #if number is not specified
+then
+    cd $address/.legit/index
+    if [ -f "$TWO" ] 
+    then
+        cat $TWO
+    else 
+        >&2 echo "legit-show: error: '$TWO' not found in index"
+    fi
+else #if number is specified
+     #assuming the commit exists
+    if [ -e ".commit$ONE" ]
+    then 
+        cd "$address/.legit/extra_files/.commit$ONE"
+        if [ -f "$TWO" ] 
+        then 
+            cat "$TWO"
+        else
+            >&2 echo "legit-show: error: '$TWO' not found in commit $ONE"
+        fi
+    else 
+        >&2 echo "legit-show: error: unknown commit '$ONE'"
+    fi
+fi
+       

@@ -1,0 +1,116 @@
+#!/bin/dash
+
+if [ ! -e ".legit" ] #ensuring that legit-init has been used
+then
+    >&2 echo "legit-add: error: no .legit directory containing legit repository exists"
+    exit 1
+fi
+
+if [ $# -ne 2 ] #ensuring the amount of arguments used is correct
+then 
+    >&2 echo "usage: legit-commit [-a] -m commit-message"
+    exit 1
+fi
+if [ $1 != "-m" ] #ensuring that the 1st argument is "-m"
+then 
+    >&2 echo "usage: legit-commit [-a] -m commit-message"
+    exit 1
+fi
+
+original_address=$PWD
+
+cd ".legit"
+cd "index"
+if [ -z "$(ls -A /$original_address/.legit/index)" ] 
+#edge case  if nothing has been added to repository
+then
+   echo "nothing to commit"
+   exit
+fi
+
+
+cd "$original_address/.legit/"
+if ! [ -e "extra_files" ] 
+#creating new directory to store folders for each commit
+then
+    mkdir "extra_files"
+    cd "extra_files"
+    echo 0 > ".count.txt"
+    touch ".message.txt"
+fi
+
+cd "$original_address/.legit/extra_files"
+#figuring out which number should be given to the commit
+count=`head -1 ".count.txt"`
+countminus1=$((count-1))
+if [ "$count" -gt "0" ] #if not first commit
+then
+    #status checks to see whether anything should committed
+    status=0 #if 0 then files are the same, if 1 then files are different
+    cd "$original_address/.legit/extra_files/.commit$countminus1"
+    num1=`ls -1 | wc -l`
+    cd "$original_address/.legit/index/"
+    num2=`ls -1 | wc -l`
+    cd $original_address/.legit/index
+    for file in *
+    do   
+        if [ $num1 -ne $num2 ] #seeing whether number of files are the same
+        then
+            status=1
+            break
+        fi
+        if ! cmp -s "$original_address/.legit/index/$file" "$original_address/.legit/extra_files/.commit$countminus1/$file"; 
+        #testing each individual file
+        then
+            status=1
+            break
+        fi  
+    done
+    #
+    if [ "$status" -eq "0" ] 
+    then
+        echo "nothing to commit"
+    else
+        #new commit to take place (main part of function)
+        cd "$original_address/.legit/extra_files"
+        echo "$count $2" >> ".message.txt" #storing here so legit-log can access
+        echo "Committed as commit $count"
+        mkdir ".commit"$count"" #file that contains specific commits
+        cd $original_address/.legit/index
+        for file in * #copying files to commit folder and repository from index
+        do   
+            cp "$file" "$original_address/.legit/"
+            cp "$file" "$original_address/.legit/extra_files/.commit$count/"
+        done
+        cd "$original_address/.legit/extra_files"
+        #increment count for next usage of legit-commits
+        count=$((count+1))
+        echo $count > ".count.txt"
+    fi
+else # if first commit
+    cd "$original_address/.legit/extra_files"
+    echo "$count $2" >> ".message.txt"
+    echo "Committed as commit $count"
+    mkdir ".commit"$count"" #file that contains specific commits
+    cd $original_address/.legit/index
+    for file in *
+    do   
+        cp "$file" "$original_address/.legit/"
+        cp "$file" "$original_address/.legit/extra_files/.commit$count/"
+    done
+    cd "$original_address/.legit/extra_files"
+    count=$((count+1))
+    echo $count > ".count.txt"
+fi
+
+
+
+
+
+
+
+
+
+
+
+

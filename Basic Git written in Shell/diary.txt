@@ -1,0 +1,10 @@
+Date	    Start	Stop	Activity	Comments
+09/07/19	16:00	18:30	coding	    implemented basic functionality for all the subset0 commands except for show
+11/06/19	13:00	14:00	coding	    implemented basic functionality for subset0 command for show
+11/06/19	14:30	17:30	debugging	debugged errors, completed the autotests for subset0
+11/06/19    18:00   19:00   coding      
+                            error 
+                            messages 
+                                
+13/06/19    14:00   21:00   Fixed edge cases,   Finished of test.sh files and edited files appropriately
+                            edited code appropriately

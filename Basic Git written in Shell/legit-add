@@ -1,0 +1,71 @@
+#!/bin/dash
+
+if [ $# -eq 0 ] #ensuring that files are put into argument
+then
+    >&2 echo "usage: legit-add <filenames>"
+    exit 1
+else
+    if [ -e ".legit" ] #if legit-init has been used
+    then      
+        for var in "$@"
+        do 
+        if echo "$var" | egrep -q ^[a-zA-Z0-9]+"([\.\-\_]|[a-zA-Z0-9])*"$ 
+        #double if statements here to get rid of edge case wherein 
+        # both the filename is valid and the file doesn't exist
+        #or the filename is invalid and the file doesn't exist
+        # essentially this is for 2 edge cases
+        then
+            if [ ! -e "$var" ]
+            then 
+                >&2 echo "legit-add: error: can not open '"$var"'"
+                exit 1
+            fi
+        else
+            if [ ! -e "$var" ]
+            then 
+                >&2 echo "legit-add: error: invalid filename '"$var"'"
+                exit 1
+            fi
+        fi
+        
+        
+        
+        
+        #main check part of the function that is not for an edge case
+        if echo "$var" | egrep -q ^[a-zA-Z0-9]+"([\.\-\_]|[a-zA-Z0-9])*"$ 
+        #checking to see if file name is valid
+        then
+            if [ -d "$var" ] #checking to see if file is a normal file or a directory
+            then 
+                >&2 echo "legit-add: error: '"$var"' is not a regular file"
+                exit 1
+            else
+                if [ -f "$var" ] #checking to see if file exists
+                then 
+                    cp "$var" "$PWD/.legit/index"
+                else
+                    >&2 echo "legit-add: error: can not open '"$var"'"
+                    exit 1
+                fi
+            fi  
+        else
+            echo "legit-add: error: invalid filename '"$var"'"
+        fi         
+        done  
+    else 
+        >&2 echo "legit-add: error: no .legit directory containing legit repository exists"
+        exit 1
+    fi
+fi
+
+
+
+
+
+
+   
+    
+
+
+
+
